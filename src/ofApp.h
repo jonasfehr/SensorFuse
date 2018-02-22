@@ -81,6 +81,7 @@ public:
     ofParameter<int> debounceHigher;
     ofParameter<bool> drawGatesToggle;
     ofParameter<bool> drawUsersToggle;
+    ofParameter<bool> drawSoundObjects;
     ofParameter<bool> drawActivityMap;
     ofParameter<bool> drawFlowField;
     ofParameter<bool> drawFlock;

@@ -263,7 +263,7 @@ void ofApp::draw(){
     int x = ofGetWidth()/2;
     int y = guiDistribution.getHeight()+10+(ofGetHeight()-guiDistribution.getHeight()-10)/2;
     
-    if(doDrawFlowField) distributionMap.drawFlowField(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
+    if(drawFlowField) distributionMap.drawFlowField(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
     
     
     if(drawGatesToggle || drawUsersToggle){
@@ -285,13 +285,15 @@ void ofApp::draw(){
                 }
             }
             
+            if(drawSoundObjects){
+                for(auto& s : soundObjects){
+                    s.draw();
+                }
+            }
+            
             ofNoFill();
             ofSetColor(ofColor::antiqueWhite);
             ofDrawRectangle(0, 0, INSTALLATION_LENGTH+SPACING_ENDS*2, INSTALLATION_WIDTH+SPACING_SIDE*2); // Draw borders of world;
-            
-            for(auto& s : soundObjects){
-                s.draw();
-            }
         }
         ofPopMatrix();
     }
@@ -313,9 +315,9 @@ void ofApp::draw(){
     }
     
     
-    if(doDrawActivityMap) activityMap.draw(x-(INSTALLATION_LENGTH/2+1)*scale, y-(INSTALLATION_WIDTH/2)*scale,(INSTALLATION_LENGTH+2)*scale, INSTALLATION_WIDTH*scale);
+    if(drawActivityMap) activityMap.draw(x-(INSTALLATION_LENGTH/2+1)*scale, y-(INSTALLATION_WIDTH/2)*scale,(INSTALLATION_LENGTH+2)*scale, INSTALLATION_WIDTH*scale);
     
-    if(doDrawFlock) distributionMap.drawFlock(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
+    if(drawFlock) distributionMap.drawFlock(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
     
     activityMap.publish();
     distributionMap.publish();
@@ -361,6 +363,7 @@ void ofApp::setupGUI(){
     guiParameters.add(debounceHigher.set("debounce higher (ms)",200,40,700));
     guiParameters.add(drawGatesToggle.set("draw gates", true));
     guiParameters.add(drawUsersToggle.set("draw users", true));
+    guiParameters.add(drawSoundObjects.set("drawSoundObjects", true));
     guiParameters.add(drawActivityMap.set("drawActivityMap users", true));
     guiParameters.add(drawFlowField.set("drawFlowField", true));
     guiParameters.add(drawFlock.set("drawFlock", true));

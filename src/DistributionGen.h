@@ -15,7 +15,7 @@ public:
     glm::vec2 pos;
     glm::vec2 vel;
     glm::vec2 accel;
-
+    
     Mover(){
         pos = glm::vec2(ofRandom(TOTAL_LENGTH),ofRandom(TOTAL_WIDTH));
         vel = glm::vec2(ofRandom(-1, 1),ofRandom(-1, 1));//ofRandom(-1, 1);
@@ -31,13 +31,13 @@ public:
         vel += accel;
         accel = glm::vec2(0.);
         vel = glm::clamp(vel, glm::vec2(-maxSpeed), glm::vec2(maxSpeed));
-
-//        if( (pos.y > 5. && vel.y > 0) || (pos.y < -5. && vel.y < 0) ){
-//            vel.y *= -0.9;
-//            if(pos.y >  5.0) pos.y = 5.;
-//            if(pos.y < -5.) pos.y -= -5;
-////            cout << "pos: " << pos << " vel: " << vel << endl;
-//        }
+        
+        //        if( (pos.y > 5. && vel.y > 0) || (pos.y < -5. && vel.y < 0) ){
+        //            vel.y *= -0.9;
+        //            if(pos.y >  5.0) pos.y = 5.;
+        //            if(pos.y < -5.) pos.y -= -5;
+        ////            cout << "pos: " << pos << " vel: " << vel << endl;
+        //        }
         
         pos += vel*ofGetLastFrameTime();
         pos.y *=yReduction;
@@ -48,7 +48,7 @@ public:
         if(pos.y >  TOTAL_WIDTH/2) pos.y =  -TOTAL_WIDTH/2;
         if(pos.y < -TOTAL_WIDTH/2) pos.y =   TOTAL_WIDTH/2;
         
-
+        
     }
     
 };
@@ -69,14 +69,14 @@ public:
     ofParameterGroup parameterGroup;
     ofParameter<bool> deactivate;
     ofParameter<float> numAgents;
-
+    
     ofParameter<float> flowfield;
     ofParameter<float> flowSpeed;
     ofParameter<float> flowZoom;
-
-
+    
+    
     ofParameter<float> neighbordist;
-
+    
     ofParameter<float> cohesion;
     ofParameter<float> align;
     ofParameter<float> desiredseparation;
@@ -87,14 +87,14 @@ public:
     ofParameter<float> amtMid;
     ofParameter<float> amtFast;
     ofParameter<float> seekCenter;
-
-
+    
+    
     ofParameter<float> maxForce;
     ofParameter<float> maxSpeed;
     
     float flowTime = 0.;
     ofFloatImage flowImg;
-
+    
     
     DistributionMap(){};
     
@@ -115,7 +115,7 @@ public:
         imgDistribution.setColor(ofFloatColor(0.,0.));
         
         flowImg.allocate(TOTAL_LENGTH, TOTAL_WIDTH, OF_IMAGE_COLOR_ALPHA);
-
+        
     }
     
     void update(){
@@ -196,10 +196,10 @@ public:
                     //                if(glm::round(m.pos.x) != indx) weight =  1./float(glm::round(m.pos.x)-indx);
                     //              cout << "index: " << indx<< " weight: "<<  weight << endl;
                     float posActivity = (aPos*2.)-INSTALLATION_LENGTH/2;
-
+                    
                     float d = distance(m.pos, glm::vec2(posActivity, 0.));
                     aPos++;
-
+                    
                     float amount = (a.second.val_slow*amtSlow + a.second.val_mid*amtMid + a.second.val_fast*amtFast)/(amtSlow+amtMid+amtFast);
                     
                     if ((d > 0) && (d < confidist) && amount > 0.1) {
@@ -241,26 +241,26 @@ public:
             noiseField.y = abs(noiseField.y)*diff.y;
             
             noiseField *= maxSpeed;
-
+            
             
             glm::vec2 steer = noiseField-m.vel;
             steer = glm::clamp(steer, glm::vec2(-maxForce), glm::vec2(maxForce));
             m.addAccel(steer*float(flowfield));
-
+            
             
             
             // seekCenter
             
-//            float d = distance(m.pos, glm::vec2(m.pos.x, 0.));
-//            glm::vec2 diff = glm::vec2(m.pos.x, 0.)-m.pos;
-//            diff = normalize(diff);
-//            diff *= d*d/25.;
-//            steer = glm::vec2(0.);
-//            steer.y = diff.y-m.vel.y;
-//            steer = glm::clamp(steer, glm::vec2(-maxForce), glm::vec2(maxForce));
-//            m.addAccel(steer*float(seekCenter));
-//            cout << d << ", " << steer*float(seekCenter) << endl;
-
+            //            float d = distance(m.pos, glm::vec2(m.pos.x, 0.));
+            //            glm::vec2 diff = glm::vec2(m.pos.x, 0.)-m.pos;
+            //            diff = normalize(diff);
+            //            diff *= d*d/25.;
+            //            steer = glm::vec2(0.);
+            //            steer.y = diff.y-m.vel.y;
+            //            steer = glm::clamp(steer, glm::vec2(-maxForce), glm::vec2(maxForce));
+            //            m.addAccel(steer*float(seekCenter));
+            //            cout << d << ", " << steer*float(seekCenter) << endl;
+            
             i++;
         }
         
@@ -272,7 +272,7 @@ public:
                 imgDistribution.setColor(i, 0, ofFloatColor(m.pos.x/TOTAL_LENGTH+0.5, m.pos.y/TOTAL_WIDTH+0.5, m.vel.x, isActive));
             }
             i++;
-                
+            
         }
         
         if(deactivate) imgDistribution.setColor(ofFloatColor(0.,0.));
@@ -289,12 +289,7 @@ public:
     
     ofTexture& getTexture(){ return imgDistribution.getTexture();}
     
-    void draw(int x, int y){
-        ofSetColor(255);
-        imgDistribution.draw(x, y);
-    }
     void drawFlowField(int x, int y, int w, int h){
-        if(true){
             flowImg.setColor(ofFloatColor(0.,0.));
             
             for(int xI = -HALF_TOTAL_LENGTH; xI < HALF_TOTAL_LENGTH; xI++){
@@ -317,10 +312,10 @@ public:
             }
             flowImg.update();
             flowImg.draw(x-w/2, y-h/2, w, h);
-        }
-        
+    }
+    
     void drawFlock(int x, int y, int w, int h){
-
+        
         ofSetColor(255);
         ofSetColor(ofColor::blue);
         
@@ -334,8 +329,6 @@ public:
             }
         }
         ofPopMatrix();
-        
-        
     }
     
     void setupParameterGroup(string name){
@@ -343,12 +336,12 @@ public:
         parameterGroup.setName(name);
         parameterGroup.add(deactivate.set("deactivate", false));
         parameterGroup.add(numAgents.set("numAgents", 5, 1, MAXMOVERS));
-
+        
         parameterGroup.add(flowfield.set("flowfield", 0.1, 0., 1.));
         parameterGroup.add(flowSpeed.set("flowSpeed", 0.01, 0., 1.));
         parameterGroup.add(flowZoom.set("flowZoom", 0.1, 0., 1.));
-
-
+        
+        
         parameterGroup.add(desiredseparation.set("desiredseparation", 2, 0., 40));
         parameterGroup.add(separation.set("separation", 0.8, 0., 2.));
         parameterGroup.add(neighbordist.set("neighbordist", 20, 0., 40.));
@@ -360,7 +353,7 @@ public:
         parameterGroup.add(amtFast.set("amtFast", 1, 0., 1.));
         parameterGroup.add(confidingness.set("confidingness", 0.8, -2., 2.));
         parameterGroup.add(seekCenter.set("seekCenter", 0.8, 0., 1.));
-
+        
         parameterGroup.add(maxForce.set("maxForce", 0.1, 0., 5.));
         parameterGroup.add(maxSpeed.set("maxSpeed", 0.1, 0., 5.));
         
