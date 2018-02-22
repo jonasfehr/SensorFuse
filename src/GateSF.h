@@ -16,10 +16,6 @@
 #include <cstdlib>
 #include <limits>
 
-#define TRIGGER_NO 0
-#define TRIGGER_MAYBE 1
-#define TRIGGER_YES 2
-
 static int8_t userIdCount = 0;
 
 class GateSF{

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<activityMap>
+	<deactivate>0</deactivate>
+	<timewindow_slow>30</timewindow_slow>
+	<timewindow_mid>15</timewindow_mid>
+	<timewindow_fast>5</timewindow_fast>
+	<fastRetrigger>4</fastRetrigger>
+	<damping>0.1</damping>
+</activityMap>

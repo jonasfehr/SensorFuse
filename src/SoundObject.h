@@ -28,7 +28,9 @@ public:
     
     void draw(){
         ofSetColor(ofColor::crimson);
-        ofDrawSphere(particle->getPosition(),particle->getRadius());
+        ofFill();
+        ofDrawCircle(particle->getPosition(), particle->getRadius());
+
     }
     
     void update(float changeFactor, float targetAvgVelocity){

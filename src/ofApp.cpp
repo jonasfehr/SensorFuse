@@ -8,19 +8,19 @@
 
 #include "ofApp.h"
 
-#define NUM_GATES 40
-#define SPACING_ENDS 4
-#define SPACING_SIDE 5
-#define INSTALLATION_LENGTH (NUM_GATES-1)*2
-#define INSTALLATION_WIDTH 4
+
 
 //--------------------------------------------------------------
 void ofApp::setup(){
+    ofSetFrameRate(60);
     // listen on the given port
     cout << "listening for osc messages on port " << PORT << "\n";
     receiver.setup( PORT );
     senderVisual.setup( SENDHOST, SENDPORT_VISUAL );
     senderAudio.setup( SENDHOST, SENDPORT_AUDIO );
+    receiverFlocking.setup( RECEIVEPORT_FLOCKING );
+    senderFlocking.setup( SENDHOST, SENDPORT_FLOCKING );
+    
     
     current_msg_string = 0;
     
@@ -41,20 +41,19 @@ void ofApp::setup(){
     fadeTime = 20.0f;
     
     // Artnet
-    ofxJSONElement json;
-    json.open("artnetAddresses.json");
+    ofJson jsonAddresses = ofLoadJson("artnetAddresses.json");
     
-    for(int i = 0; i < json.size(); i++){
-        artnetAddrs.push_back(json[i].asString());
+    for (auto& address : jsonAddresses) {
+        artnetAddrs.push_back(ofToInt(address.get<std::string>()));
     }
     
-    int i = 0;
     
     //init Sensor objects in the artnetAddrs list with artnet name
+    int i = 0;
     for(auto& address : artnetAddrs){
         // Create gate
         ofVec2f position = ofVec2f((2.0*i)+SPACING_ENDS, INSTALLATION_WIDTH/2+SPACING_SIDE);
-        gates[ofToInt(address)] = GateSF(i, address,position,&users,&world, &guiParameters, &senderVisual, &soundObjects);
+        gates[address] = GateSF(i, ofToString(address),position,&users,&world, &guiParameters, &senderVisual, &soundObjects);
         i++;
     }
     
@@ -82,6 +81,21 @@ void ofApp::setup(){
     }
     
     gateDisplay.resize(NUM_GATE_DISPLAY);
+    
+    
+    // Activity map:
+    
+    activityMap.setup("activityMap", artnetAddrs);
+    guiActivity.setup(activityMap.parameterGroup, "settingsActivity", 20+gui.getWidth(),10);
+    
+    
+    distributionMap.setup("distMap",&activityMap);
+    guiDistribution.setup(distributionMap.parameterGroup, "settingsActivity", 30+gui.getWidth()+guiActivity.getWidth(), 10);
+    
+    
+    gui.loadFromFile("settings.xml");
+    guiActivity.loadFromFile("settingsActivity.xml");
+    guiDistribution.loadFromFile("settingsDistribution.xml");
     
 }
 
@@ -133,13 +147,15 @@ void ofApp::update(){
     }
     
     //PARSE OSC
+    uint64_t elapsedTime = ofGetElapsedTimeMillis();
     while( receiver.hasWaitingMessages() ){
         ofxOscMessage m;
-        receiver.getNextMessage( &m );
+        receiver.getNextMessage( m );
         
         string msg_string;
         msg_string = m.getAddress(); //expect "/BeamBreak/[artnetaddr] [0-1]"
         msgTokens = ofSplitString(msg_string, "/", true); //ignore (leading) empty token = true
+        
         
         if(msgTokens[0] == "BeamBreak"){
             //convert artnet string for easy array access
@@ -156,8 +172,9 @@ void ofApp::update(){
             //add trigger value and timestamp to sensor@artnetAddr
             // check if entry exists in map
             map<int,GateSF>::iterator i = gates.find(artnet);
-            if (!(i == gates.end())) { gates[artnet].activate();
-                
+            if (!(i == gates.end())) {
+                gates[artnet].activate();
+                activityMap.activity[artnet].trigger(elapsedTime);
             }
             
             msg_string += " value=";
@@ -192,49 +209,116 @@ void ofApp::update(){
         }
         oldMillis = ofGetElapsedTimeMillis()/25;
     }
+    
+    activityMap.update();
+    distributionMap.update();
+    
+    // simulation
+    
+    if(simulation && ofRandom(1.)<possibility){
+        int addr = artnetAddrs[ofRandom(40)];
+        gates[addr].activate();
+        activityMap.activity[addr].trigger(elapsedTime);
+    }
+    
+    // RECEIVE OSC FLOCKING
+    while( receiverFlocking.hasWaitingMessages() ){
+        ofxOscMessage m;
+        receiverFlocking.getNextMessage( m );
+        
+        string msg_string;
+        msg_string = m.getAddress();
+        msgTokens = ofSplitString(msg_string, "/", true);
+        
+        
+        if(msgTokens[0] == "Flocking"){
+            
+            if(m.getNumArgs() < distributionMap.parameterGroup.size()-1){
+                
+                for(int i = 1; i<m.getNumArgs(); i++ ){
+                    distributionMap.parameterGroup.getFloat(i) = ofMap(m.getArgAsFloat(i-1), 0, 1., distributionMap.parameterGroup.getFloat(i).getMin(), distributionMap.parameterGroup.getFloat(i).getMax());
+                }
+            }
+        }
+    }
+    
+    if(int(ofGetElapsedTimef())%10 == 0 && sendFlag){ // sends all 10 seconds
+        sendFlag = false;
+        // SEND FLOCKING
+        ofxOscMessage m;
+        m.setAddress("/Flocking");
+        for(int i = 1; i<distributionMap.parameterGroup.size(); i++ ){
+            m.addFloatArg(distributionMap.parameterGroup.getFloat(i));
+        }
+        senderFlocking.sendMessage(m);
+    }
+    if(int(ofGetElapsedTimef())%10 == 1) sendFlag = true;
 }
+
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     ofBackground(ofColor::dimGray);
-    ofPushMatrix();
-    {
-        ofTranslate(ofGetWidth()/2, gui.getHeight()+10+(ofGetHeight()-gui.getHeight()-10)/2);
-        ofScale(10,10);
-        ofTranslate(-INSTALLATION_LENGTH/2-SPACING_ENDS, -INSTALLATION_WIDTH/2-SPACING_SIDE);
-        
-        if(drawGatesToggle){
-            for(auto& g : gates){
-                g.second.draw();
-            }
-        }
-        
-        if(drawUsersToggle){
-            for(auto& u : users){
-                u.draw();
-            }
-        }
-        
-        ofNoFill();
-        ofSetColor(ofColor::antiqueWhite);
-        ofDrawRectangle(0, 0, INSTALLATION_LENGTH+SPACING_ENDS*2, INSTALLATION_WIDTH+SPACING_SIDE*2); // Draw borders of world;
-        
-        for(auto& s : soundObjects){
-            s.draw();
-        }
-    }
-    ofPopMatrix();
+    int scale = 10;
+    int x = ofGetWidth()/2;
+    int y = guiDistribution.getHeight()+10+(ofGetHeight()-guiDistribution.getHeight()-10)/2;
     
-    std::string info;
-    info+="no. of users:\n";
-    info+=ofToString(users.size());
-    ofSetColor(ofColor::darkRed);
-    ofDrawBitmapStringHighlight(info, 25+gui.getWidth(), 25);
+    if(doDrawFlowField) distributionMap.drawFlowField(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
+    
+    
+    if(drawGatesToggle || drawUsersToggle){
+        ofPushMatrix();
+        {
+            ofTranslate(x, y);
+            ofScale(scale,scale);
+            ofTranslate(-INSTALLATION_LENGTH/2-SPACING_ENDS, -INSTALLATION_WIDTH/2-SPACING_SIDE);
+            
+            if(drawGatesToggle){
+                for(auto& g : gates){
+                    g.second.draw();
+                }
+            }
+            
+            if(drawUsersToggle){
+                for(auto& u : users){
+                    u.draw();
+                }
+            }
+            
+            ofNoFill();
+            ofSetColor(ofColor::antiqueWhite);
+            ofDrawRectangle(0, 0, INSTALLATION_LENGTH+SPACING_ENDS*2, INSTALLATION_WIDTH+SPACING_SIDE*2); // Draw borders of world;
+            
+            for(auto& s : soundObjects){
+                s.draw();
+            }
+        }
+        ofPopMatrix();
+    }
+    
+    
     
     // GUI
     if(!hideGui){
         gui.draw();
+        guiActivity.draw();
+        guiDistribution.draw();
+        
+        int posX = 40+gui.getWidth()+guiActivity.getWidth()+guiDistribution.getWidth();
+        std::string info;
+        info+="no. of users:\n";
+        info+=ofToString(users.size());
+        ofSetColor(ofColor::darkRed);
+        ofDrawBitmapStringHighlight(info,posX, 25);
     }
+    
+    
+    if(doDrawActivityMap) activityMap.draw(x-(INSTALLATION_LENGTH/2+1)*scale, y-(INSTALLATION_WIDTH/2)*scale,(INSTALLATION_LENGTH+2)*scale, INSTALLATION_WIDTH*scale);
+    
+    if(doDrawFlock) distributionMap.drawFlock(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
+    
+    activityMap.publish();
+    distributionMap.publish();
 }
 
 //--------------------------------------------------------------
@@ -242,12 +326,22 @@ void ofApp::keyPressed(int key){
     if(key == 'g' || key == 'G'){
         hideGui = !hideGui;
     }
+    if(key == 'l'){
+        gui.loadFromFile("settings.xml");
+        guiActivity.loadFromFile("settingsActivity.xml");
+        guiDistribution.loadFromFile("settingsDistribution.xml");
+    }
+    if(key == 's'){
+        gui.saveToFile("settings.xml");
+        guiActivity.saveToFile("settingsActivity.xml");
+        guiDistribution.saveToFile("settingsDistribution.xml");
+    }
     
     // Activate gate sensors based on key
     if(key-48 > 0 && key-48 < gates.size()){
-        long timeTriggered = ofGetElapsedTimeMillis();
-        string address = artnetAddrs.at(key-48);
-        gates[ofToInt(address)].activate();
+        int address = artnetAddrs.at(key-48);
+        gates[address].activate();
+        activityMap.activity[address].trigger(ofGetElapsedTimeMillis());
         
     }
 }
@@ -267,10 +361,13 @@ void ofApp::setupGUI(){
     guiParameters.add(debounceHigher.set("debounce higher (ms)",200,40,700));
     guiParameters.add(drawGatesToggle.set("draw gates", true));
     guiParameters.add(drawUsersToggle.set("draw users", true));
+    guiParameters.add(drawActivityMap.set("drawActivityMap users", true));
+    guiParameters.add(drawFlowField.set("drawFlowField", true));
+    guiParameters.add(drawFlock.set("drawFlock", true));
     guiParameters.add(doUsersAttract.set("doUsersAttract", true));
+    guiParameters.add(simulation.set("simulation", true));
+    guiParameters.add(possibility.set("possibility",0.1,0,1.));
     gui.setup(guiParameters);
-    //    gui.saveToFile("settings.xml");
-    gui.loadFromFile("settings.xml");
 }
 
 //--------------------------------------------------------------
@@ -317,3 +414,4 @@ void ofApp::gotMessage(ofMessage msg){
 void ofApp::dragEvent(ofDragInfo dragInfo){
     
 }
+

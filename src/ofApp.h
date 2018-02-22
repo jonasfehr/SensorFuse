@@ -3,21 +3,14 @@
 #include "ofMain.h"
 #include "ofxOsc.h"
 #include "ofxGUI.h"
-#include "ofxJSON.h"
 #include "GateSF.h"
 #include "SoundObject.h"
 #include "MsaPhysics2D.h"
+#include "ActivityMap.h"
+#include "DistributionGen.h"
+#include "defines.h"
 
-#define PORT 49161
-#define NUM_MSG_STRINGS 30
-#define NUM_GATE_DISPLAY 100
-#define DEBUG 0
-#define NUMBER_OF_SOUNDOBJECTS 6
 
-#define SENDHOST "localhost"
-#define SENDPORT_VISUAL 49162
-#define SENDPORT_AUDIO 49163
-#define LASTARTNETADDR 32
 
 class ofApp : public ofBaseApp{
     
@@ -47,6 +40,8 @@ public:
     ofxOscReceiver	receiver;
     ofxOscSender senderVisual;
     ofxOscSender senderAudio;
+    ofxOscReceiver    receiverFlocking;
+    ofxOscSender senderFlocking;
     
     int				current_msg_string;
     string          msg_strings[NUM_MSG_STRINGS];
@@ -57,7 +52,7 @@ public:
     
     //list of artnetAddress - todo: load off xml file?
     //need to be ordered asc
-    vector<string>  artnetAddrs;
+    vector<int>  artnetAddrs;
     
     std::map<int,GateSF> gates;
     
@@ -76,6 +71,9 @@ public:
     // GUI
     ofParameterGroup guiParameters;
     ofxPanel gui;
+    ofxPanel guiActivity;
+    ofxPanel guiDistribution;
+
     bool hideGui = false;
     ofParameter<int> timingThreshold;
     ofParameter<float> distanceThreshold;
@@ -83,10 +81,23 @@ public:
     ofParameter<int> debounceHigher;
     ofParameter<bool> drawGatesToggle;
     ofParameter<bool> drawUsersToggle;
+    ofParameter<bool> drawActivityMap;
+    ofParameter<bool> drawFlowField;
+    ofParameter<bool> drawFlock;
     ofParameter<bool> doUsersAttract;
     ofParameter<float> targetAvgVelocity;
+    ofParameter<bool> simulation;
+    ofParameter<float> possibility;
+
 
     int oldMillis = 0;
+    
+    // Axtivity measure
+    ActivityMap activityMap;
+    
+    DistributionMap distributionMap;
+    
+    bool sendFlag = true;
 };
 
 

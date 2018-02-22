@@ -1,17 +1,13 @@
-<group>
-	<timing_threshold>2.0975</timing_threshold>
+<?xml version="1.0"?>
+<GUI>
+	<targetAvgVelocity>5</targetAvgVelocity>
+	<timing_threshold__ms_>400</timing_threshold__ms_>
+	<dist_threshold__m_>2.2</dist_threshold__m_>
+	<debounce_lower__ms_>100</debounce_lower__ms_>
+	<debounce_higher__ms_>200</debounce_higher__ms_>
 	<draw_gates>1</draw_gates>
 	<draw_users>1</draw_users>
-<group/>
-<GUI>
-		<timing_threshold__s_>2.5</timing_threshold__s_>
-		<dist_threshold__m_>2.2</dist_threshold__m_>
-		<debounce_lower__ms_>100</debounce_lower__ms_>
-		<debounce_higher__ms_>200</debounce_higher__ms_>
-		<draw_gates>1</draw_gates>
-		<draw_users>1</draw_users>
-	<timing_threshold__ms_>400</timing_threshold__ms_>
-	<targetAvgVelocity>5</targetAvgVelocity>
-		<doUsersAttract>0</doUsersAttract>
-	</GUI>
-</group>
+	<doUsersAttract>0</doUsersAttract>
+	<simulation>0</simulation>
+	<possibility>0.1</possibility>
+</GUI>

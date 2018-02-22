@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<distMap>
+	<deactivate>0</deactivate>
+	<noiseAdd>0.05</noiseAdd>
+	<amtSlow>0</amtSlow>
+	<amtMid>0</amtMid>
+	<amtFast>0.59</amtFast>
+	<desiredseparation>2.8</desiredseparation>
+	<separation>0.69</separation>
+	<neighbordist>40</neighbordist>
+	<align>0</align>
+	<cohesion>0</cohesion>
+	<confidist>40</confidist>
+	<confidingness>0.04</confidingness>
+	<maxForce>1.325</maxForce>
+	<maxSpeed>5</maxSpeed>
+	<numAgents>5</numAgents>
+	<flowfield>0</flowfield>
+	<flowSpeed>0.255</flowSpeed>
+	<flowZoom>0.03</flowZoom>
+	<seekCenter>0.04</seekCenter>
+</distMap>
