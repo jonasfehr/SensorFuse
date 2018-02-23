@@ -91,7 +91,8 @@ public:
     
     ofParameter<float> maxForce;
     ofParameter<float> maxSpeed;
-    
+    ofParameter<float> maxSpeedSum;
+
     float flowTime = 0.;
     ofFloatImage flowImg;
     
@@ -267,7 +268,7 @@ public:
         i = 0;
         for( auto & m : movers){
             if(i<numAgents){
-                m.update(maxSpeed, 1.-seekCenter);
+                m.update(maxSpeedSum, 1.-seekCenter);
                 float isActive = (i<numAgents)? 1. : 0.;
                 imgDistribution.setColor(i, 0, ofFloatColor(m.pos.x/TOTAL_LENGTH+0.5, m.pos.y/TOTAL_WIDTH+0.5, m.vel.x, isActive));
             }
@@ -356,7 +357,8 @@ public:
         
         parameterGroup.add(maxForce.set("maxForce", 0.1, 0., 5.));
         parameterGroup.add(maxSpeed.set("maxSpeed", 0.1, 0., 5.));
-        
+        parameterGroup.add(maxSpeedSum.set("maxSpeedSum", 0.1, 0., 5.));
+
     }
     
     ofParameterGroup& getParameterGroup(){ return parameterGroup; }

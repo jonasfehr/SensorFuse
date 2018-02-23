@@ -229,17 +229,56 @@ void ofApp::update(){
         string msg_string;
         msg_string = m.getAddress();
         msgTokens = ofSplitString(msg_string, "/", true);
-        
-        
+
         if(msgTokens[0] == "Flocking"){
-            
-            if(m.getNumArgs() < distributionMap.parameterGroup.size()-1){
-                
+            if( (msgTokens.size() ==  1) && (m.getNumArgs() < (distributionMap.parameterGroup.size()-1)) ){
                 for(int i = 1; i<m.getNumArgs(); i++ ){
                     distributionMap.parameterGroup.getFloat(i) = ofMap(m.getArgAsFloat(i-1), 0, 1., distributionMap.parameterGroup.getFloat(i).getMin(), distributionMap.parameterGroup.getFloat(i).getMax());
                 }
+                
+            } else if( msgTokens.size() == 2){
+
+                if(msgTokens[1] == "numAgents"){
+                    distributionMap.numAgents = m.getArgAsFloat(0) < 20 ? m.getArgAsFloat(0) : 20 ;
+                }else if(msgTokens[1] == "flowfield"){
+                    distributionMap.flowfield = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "flowSpeed"){
+                    distributionMap.flowSpeed = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "flowZoom"){
+                    distributionMap.flowZoom = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "desiredseparation"){
+                    distributionMap.desiredseparation = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "separation"){
+                    distributionMap.separation = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "neighbordist"){
+                    distributionMap.neighbordist = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "align"){
+                    distributionMap.align = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "cohesion"){
+                    distributionMap.cohesion = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "confidist"){
+                    distributionMap.confidist = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "amtSlow"){
+                    distributionMap.amtSlow = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "amtFast"){
+                    distributionMap.amtFast = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "amtMid"){
+                    distributionMap.amtMid = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "confidingness"){
+                    distributionMap.confidingness = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "seekCenter"){
+                    distributionMap.seekCenter = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "maxForce"){
+                    distributionMap.maxForce = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "maxSpeed"){
+                    distributionMap.maxSpeed = m.getArgAsFloat(0);
+                }else if(msgTokens[1] == "maxSpeedSum"){
+                    distributionMap.maxSpeedSum = m.getArgAsFloat(0);
+                }
             }
         }
+
+
     }
     
     if(int(ofGetElapsedTimef())%10 == 0 && sendFlag){ // sends all 10 seconds
