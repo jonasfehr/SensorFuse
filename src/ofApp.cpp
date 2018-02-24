@@ -231,7 +231,7 @@ void ofApp::update(){
         msgTokens = ofSplitString(msg_string, "/", true);
 
         if(msgTokens[0] == "Flocking"){
-            if( (msgTokens.size() ==  1) && (m.getNumArgs() < (distributionMap.parameterGroup.size()-1)) ){
+            if( (m.getNumArgs() == (distributionMap.parameterGroup.size()-1)) ){
                 for(int i = 1; i<m.getNumArgs(); i++ ){
                     distributionMap.parameterGroup.getFloat(i) = ofMap(m.getArgAsFloat(i-1), 0, 1., distributionMap.parameterGroup.getFloat(i).getMin(), distributionMap.parameterGroup.getFloat(i).getMax());
                 }
@@ -281,13 +281,13 @@ void ofApp::update(){
 
     }
     
-    if(int(ofGetElapsedTimef())%10 == 0 && sendFlag){ // sends all 10 seconds
+    if(int(ofGetElapsedTimef())%2 == 0 && sendFlag){ // sends all 10 seconds
         sendFlag = false;
         // SEND FLOCKING
         ofxOscMessage m;
         m.setAddress("/Flocking");
         for(int i = 1; i<distributionMap.parameterGroup.size(); i++ ){
-            m.addFloatArg(distributionMap.parameterGroup.getFloat(i));
+            m.addFloatArg(ofMap(distributionMap.parameterGroup.getFloat(i), distributionMap.parameterGroup.getFloat(i).getMin(), distributionMap.parameterGroup.getFloat(i).getMax(), 0., 1.));
         }
         senderFlocking.sendMessage(m);
     }
@@ -357,6 +357,8 @@ void ofApp::draw(){
     if(drawActivityMap) activityMap.draw(x-(INSTALLATION_LENGTH/2+1)*scale, y-(INSTALLATION_WIDTH/2)*scale,(INSTALLATION_LENGTH+2)*scale, INSTALLATION_WIDTH*scale);
     
     if(drawFlock) distributionMap.drawFlock(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
+    
+    distributionMap.draw(30+gui.getWidth()+guiActivity.getWidth(),15+guiDistribution.getHeight(), guiDistribution.getWidth(),10);
     
     activityMap.publish();
     distributionMap.publish();

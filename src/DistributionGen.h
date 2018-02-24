@@ -332,6 +332,12 @@ public:
         ofPopMatrix();
     }
     
+    void draw(int x, int y, int w, int h){
+        
+        ofSetColor(255);
+        imgDistribution.draw(x,y,w,h);
+    }
+    
     void setupParameterGroup(string name){
         
         parameterGroup.setName(name);

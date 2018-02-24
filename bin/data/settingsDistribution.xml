@@ -2,21 +2,22 @@
 <distMap>
 	<deactivate>0</deactivate>
 	<noiseAdd>0.05</noiseAdd>
-	<amtSlow>0</amtSlow>
-	<amtMid>0</amtMid>
-	<amtFast>0.59</amtFast>
-	<desiredseparation>2.8</desiredseparation>
-	<separation>0.69</separation>
-	<neighbordist>40</neighbordist>
-	<align>0</align>
+	<amtSlow>1</amtSlow>
+	<amtMid>1</amtMid>
+	<amtFast>0.25</amtFast>
+	<desiredseparation>6</desiredseparation>
+	<separation>0.18</separation>
+	<neighbordist>5</neighbordist>
+	<align>0.09</align>
 	<cohesion>0</cohesion>
-	<confidist>40</confidist>
-	<confidingness>0.04</confidingness>
+	<confidist>9</confidist>
+	<confidingness>0.64</confidingness>
 	<maxForce>1.325</maxForce>
 	<maxSpeed>5</maxSpeed>
-	<numAgents>5</numAgents>
-	<flowfield>0</flowfield>
-	<flowSpeed>0.255</flowSpeed>
-	<flowZoom>0.03</flowZoom>
-	<seekCenter>0.04</seekCenter>
+	<numAgents>9.17</numAgents>
+	<flowfield>0.35</flowfield>
+	<flowSpeed>0.035</flowSpeed>
+	<flowZoom>0.065</flowZoom>
+	<seekCenter>0</seekCenter>
+	<maxSpeedSum>5</maxSpeedSum>
 </distMap>

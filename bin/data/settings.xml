@@ -1,13 +1,17 @@
 <?xml version="1.0"?>
 <GUI>
 	<targetAvgVelocity>5</targetAvgVelocity>
-	<timing_threshold__ms_>400</timing_threshold__ms_>
+	<timing_threshold__ms_>1877</timing_threshold__ms_>
 	<dist_threshold__m_>2.2</dist_threshold__m_>
 	<debounce_lower__ms_>100</debounce_lower__ms_>
 	<debounce_higher__ms_>200</debounce_higher__ms_>
 	<draw_gates>1</draw_gates>
-	<draw_users>1</draw_users>
+	<draw_users>0</draw_users>
 	<doUsersAttract>0</doUsersAttract>
 	<simulation>0</simulation>
-	<possibility>0.1</possibility>
+	<possibility>0.005</possibility>
+	<drawSoundObjects>0</drawSoundObjects>
+	<drawActivityMap_users>1</drawActivityMap_users>
+	<drawFlowField>1</drawFlowField>
+	<drawFlock>1</drawFlock>
 </GUI>
