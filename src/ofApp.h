@@ -99,6 +99,10 @@ public:
     DistributionMap distributionMap;
     
     bool sendFlag = true;
+    
+    ofxSyphonServer syphonOutSoundObjects;
+    ofFloatImage imgSoundObjects;
+
 };
 
 

@@ -10,11 +10,11 @@
 	<neighbordist>5</neighbordist>
 	<align>0.09</align>
 	<cohesion>0</cohesion>
-	<confidist>9</confidist>
+	<confidist>20</confidist>
 	<confidingness>0.64</confidingness>
 	<maxForce>1.325</maxForce>
 	<maxSpeed>5</maxSpeed>
-	<numAgents>9.17</numAgents>
+	<numAgents>3.945</numAgents>
 	<flowfield>0.35</flowfield>
 	<flowSpeed>0.035</flowSpeed>
 	<flowZoom>0.065</flowZoom>

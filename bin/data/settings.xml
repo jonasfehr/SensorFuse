@@ -7,10 +7,10 @@
 	<debounce_higher__ms_>200</debounce_higher__ms_>
 	<draw_gates>1</draw_gates>
 	<draw_users>0</draw_users>
-	<doUsersAttract>0</doUsersAttract>
-	<simulation>0</simulation>
+	<doUsersAttract>1</doUsersAttract>
+	<simulation>1</simulation>
 	<possibility>0.005</possibility>
-	<drawSoundObjects>0</drawSoundObjects>
+	<drawSoundObjects>1</drawSoundObjects>
 	<drawActivityMap_users>1</drawActivityMap_users>
 	<drawFlowField>1</drawFlowField>
 	<drawFlock>1</drawFlock>

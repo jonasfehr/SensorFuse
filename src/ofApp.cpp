@@ -97,6 +97,9 @@ void ofApp::setup(){
     guiActivity.loadFromFile("settingsActivity.xml");
     guiDistribution.loadFromFile("settingsDistribution.xml");
     
+    imgSoundObjects.allocate(20, 1, OF_IMAGE_COLOR_ALPHA);
+    syphonOutSoundObjects.setName("SoundObjects");
+    
 }
 
 //--------------------------------------------------------------
@@ -213,6 +216,7 @@ void ofApp::update(){
     activityMap.update();
     distributionMap.update();
     
+    
     // simulation
     
     if(simulation && ofRandom(1.)<possibility){
@@ -304,7 +308,7 @@ void ofApp::draw(){
     
     if(drawFlowField) distributionMap.drawFlowField(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
     
-    
+    imgSoundObjects.setColor(ofFloatColor(0.,0.));
     if(drawGatesToggle || drawUsersToggle){
         ofPushMatrix();
         {
@@ -337,7 +341,13 @@ void ofApp::draw(){
         ofPopMatrix();
     }
     
-    
+    int i = 0;
+    for(auto& s : soundObjects){
+//        cout << s.getPosition() <<endl;
+        imgSoundObjects.setColor(i, 0, ofFloatColor(s.getPosition().x/TOTAL_LENGTH, s.getPosition().y/TOTAL_WIDTH, 0, 1.));
+        i++;
+    }
+    imgSoundObjects.update();
     
     // GUI
     if(!hideGui){
@@ -359,9 +369,16 @@ void ofApp::draw(){
     if(drawFlock) distributionMap.drawFlock(x, y,TOTAL_LENGTH*scale, TOTAL_WIDTH*scale);
     
     distributionMap.draw(30+gui.getWidth()+guiActivity.getWidth(),15+guiDistribution.getHeight(), guiDistribution.getWidth(),10);
+    imgSoundObjects.draw(10,15+gui.getHeight(), gui.getWidth(),10);
+
     
     activityMap.publish();
     distributionMap.publish();
+    
+    // PUBLISH OUTPUT
+    ofSetColor(255);
+    ofFill();
+    syphonOutSoundObjects.publishTexture(&imgSoundObjects.getTexture());
 }
 
 //--------------------------------------------------------------

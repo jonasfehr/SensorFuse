@@ -318,6 +318,7 @@ public:
     void drawFlock(int x, int y, int w, int h){
         
         ofSetColor(255);
+        ofFill();
         ofSetColor(ofColor::blue);
         
         ofPushMatrix();
