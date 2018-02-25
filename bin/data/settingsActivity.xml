@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <activityMap>
 	<deactivate>0</deactivate>
-	<timewindow_slow>270.55</timewindow_slow>
-	<timewindow_mid>147.755</timewindow_mid>
-	<timewindow_fast>81.865</timewindow_fast>
+	<timewindow_slow>30</timewindow_slow>
+	<timewindow_mid>10</timewindow_mid>
+	<timewindow_fast>5</timewindow_fast>
 	<fastRetrigger>4</fastRetrigger>
 	<damping>0.1</damping>
 </activityMap>
